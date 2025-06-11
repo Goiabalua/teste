@@ -239,6 +239,7 @@ function UILibrary:CreateWindow(title)
             local Frame = Create("Frame", {
                 Size = UDim2.new(1, -10, 0, 30),
                 BackgroundColor3 = Color3.fromRGB(70, 70, 70),
+                ClipsDescendants = false,  -- <- AQUI A CORREÇÃO
                 Parent = Page
             })
         
