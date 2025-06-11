@@ -9,12 +9,11 @@ local function Create(instance, properties)
     return obj
 end
 
-local function MakeDraggable(frame)
+local function MakeDraggable(frame, blockFlag)
     local dragging, dragInput, dragStart, startPos
-    local ignoreDrag = false -- variável interna
 
     frame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 and not ignoreDrag then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 and not blockFlag.Value then
             dragging = true
             dragStart = input.Position
             startPos = frame.Position
@@ -41,21 +40,12 @@ local function MakeDraggable(frame)
             )
         end
     end)
-
-    -- Função interna para bloquear drag (usada apenas internamente)
-    local function setIgnoreDrag(value)
-        ignoreDrag = value
-        if value then dragging = false end
-    end
-
-    return {
-        setIgnoreDrag = setIgnoreDrag
-    }
 end
 
 -- Criar janela principal
 function UILibrary:CreateWindow(title)
     local ScreenGui = Create("ScreenGui", { Parent = game.Players.LocalPlayer.PlayerGui, Name = "UILibrary" })
+    local blockDrag = { Value = false } -- bloqueia drag
 
     local Main = Create("Frame", {
         Size = UDim2.new(0, 550, 0, 400),
@@ -65,7 +55,15 @@ function UILibrary:CreateWindow(title)
         Parent = ScreenGui
     })
 
-    MakeDraggable(Main)
+    MakeDraggable(Main, blockDrag)
+
+    -- E no slider, quando iniciar o drag, bloqueia:
+    UIS.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            blockDrag.Value = true -- bloqueia drag da janela
+        end
+    end)
 
     local Title = Create("TextLabel", {
         Size = UDim2.new(1,0,0,40),
@@ -234,6 +232,7 @@ function UILibrary:CreateWindow(title)
             UIS.InputEnded:Connect(function(input)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 then
                     dragging = false
+                    blockDrag.Value = false -- libera drag da janela
                 end
             end)
         end
