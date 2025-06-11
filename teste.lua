@@ -9,11 +9,12 @@ local function Create(instance, properties)
     return obj
 end
 
-local function MakeDraggable(frame, blockFlag)
+-- Sistema de Drag corrigido
+local function MakeDraggable(frame)
     local dragging, dragInput, dragStart, startPos
 
     frame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 and not blockFlag.Value then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
             dragStart = input.Position
             startPos = frame.Position
@@ -45,7 +46,6 @@ end
 -- Criar janela principal
 function UILibrary:CreateWindow(title)
     local ScreenGui = Create("ScreenGui", { Parent = game.Players.LocalPlayer.PlayerGui, Name = "UILibrary" })
-    local blockDrag = { Value = false } -- bloqueia drag
 
     local Main = Create("Frame", {
         Size = UDim2.new(0, 550, 0, 400),
@@ -55,15 +55,7 @@ function UILibrary:CreateWindow(title)
         Parent = ScreenGui
     })
 
-    MakeDraggable(Main, blockDrag)
-
-    -- E no slider, quando iniciar o drag, bloqueia:
-    UIS.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            blockDrag.Value = true -- bloqueia drag da janela
-        end
-    end)
+    MakeDraggable(Main)
 
     local Title = Create("TextLabel", {
         Size = UDim2.new(1,0,0,40),
@@ -232,7 +224,6 @@ function UILibrary:CreateWindow(title)
             UIS.InputEnded:Connect(function(input)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 then
                     dragging = false
-                    blockDrag.Value = false -- libera drag da janela
                 end
             end)
         end
