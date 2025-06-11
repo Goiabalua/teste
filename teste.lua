@@ -1,9 +1,5 @@
--- UI Library criada por Goiaba.lua
--- 100% standalone para loadstring()
-
 local UILibrary = {}
 
--- Cria a Janela Principal
 function UILibrary:CreateWindow(title)
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "CustomUILibrary"
@@ -83,16 +79,4 @@ function UILibrary:AddButton(tab, buttonName, callback)
     end)
 end
 
--- Exemplo de uso direto ao carregar o script:
-
-local window = UILibrary:CreateWindow("Meu Hub Externo")
-
-local mainTab = window:AddTab("Main")
-
-window:AddButton(mainTab, "Print Teste", function()
-    print("Botão funcionando!")
-end)
-
-window:AddButton(mainTab, "Outro botão", function()
-    game.Players.LocalPlayer:Kick("Testando o kick!")
-end)
+return UILibrary
