@@ -11,7 +11,7 @@ end
 
 local function MakeDraggable(frame)
     local dragging, dragInput, dragStart, startPos
-    local ignoreDrag = false -- variável para ignorar drag quando slider está sendo usado
+    local ignoreDrag = false -- variável interna
 
     frame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 and not ignoreDrag then
@@ -42,12 +42,14 @@ local function MakeDraggable(frame)
         end
     end)
 
-    -- Funções para controlar ignoreDrag, que vamos chamar de fora
+    -- Função interna para bloquear drag (usada apenas internamente)
+    local function setIgnoreDrag(value)
+        ignoreDrag = value
+        if value then dragging = false end
+    end
+
     return {
-        SetIgnoreDrag = function(value)
-            ignoreDrag = value
-            if value then dragging = false end
-        end
+        setIgnoreDrag = setIgnoreDrag
     }
 end
 
