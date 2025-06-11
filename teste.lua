@@ -235,13 +235,13 @@ function UILibrary:CreateWindow(title)
 
         function tab:AddDropdown(name, options)
             local selected = options.Values[options.Default or 1]
-
+        
             local Frame = Create("Frame", {
                 Size = UDim2.new(1, -10, 0, 30),
                 BackgroundColor3 = Color3.fromRGB(70, 70, 70),
                 Parent = Page
             })
-
+        
             local Label = Create("TextButton", {
                 Size = UDim2.new(1, 0, 1, 0),
                 Text = options.Title .. ": " .. selected,
@@ -251,18 +251,30 @@ function UILibrary:CreateWindow(title)
                 TextSize = 14,
                 Parent = Frame
             })
-
+        
+            local menuOpen = false
+            local menu = nil
+        
             local function update(new)
                 selected = new
                 Label.Text = options.Title .. ": " .. selected
                 if options.Callback then options.Callback(selected) end
             end
-
+        
             Label.MouseButton1Click:Connect(function()
-                local menu = Instance.new("Frame", Frame)
+                if menuOpen then
+                    menu:Destroy()
+                    menuOpen = false
+                    return
+                end
+        
+                menuOpen = true
+                menu = Instance.new("Frame", Frame)
                 menu.Position = UDim2.new(0, 0, 1, 0)
                 menu.Size = UDim2.new(1, 0, 0, #options.Values * 25)
                 menu.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+                menu.ZIndex = 2
+        
                 for i, opt in ipairs(options.Values) do
                     local btn = Create("TextButton", {
                         Size = UDim2.new(1, 0, 0, 25),
@@ -274,14 +286,16 @@ function UILibrary:CreateWindow(title)
                         TextSize = 14,
                         Parent = menu
                     })
+        
                     btn.MouseButton1Click:Connect(function()
                         update(opt)
                         menu:Destroy()
+                        menuOpen = false
                     end)
                 end
             end)
         end
-
+        
         table.insert(window.Tabs, { Button = Button, Page = Page })
         if #window.Tabs == 1 then Page.Visible = true end
         return tab
